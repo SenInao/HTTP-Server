@@ -45,9 +45,6 @@ int main(int argc, char const* argv[])
 
   send(client_fd, data, strlen(data), 0);
 
-  valread = read(client_fd, buffer, 1024 - 1);
-  printf("%s", buffer);
-
   // closing the connected socket
   close(client_fd);
   return 0;

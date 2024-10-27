@@ -4,17 +4,46 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #define PORT 8888
+
+void handle_request(char* request) {
+  int i;
+  char line[50];
+  for (i = 0; i < strlen(request); i++) {
+    if (request[i] == '\n') {
+      printf("line:%d - %s", i, line);
+      memset(line, 0, sizeof(line));
+      continue;
+    }
+    line[i] = request[i];
+  }
+}
+
+void* handle_client(void*arg) {
+  int client = *(int *)arg;
+  free(arg);
+  ssize_t valread;
+  char buffer[1024] = { 0 };
+
+  valread = read(client, buffer, 1024 - 1);
+  if (valread > 0) {
+    buffer[valread] = '\0';
+  }
+
+  handle_request(buffer);
+
+  close(client);
+  return NULL;
+}
 
 int main(int argc, char const* argv[])
 {
   int server_fd;
-  ssize_t valread;
   struct sockaddr_in address;
   int opt = 1;
   socklen_t addrlen = sizeof(address);
-  char buffer[1024] = { 0 };
 
   //create socket
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -42,30 +71,24 @@ int main(int argc, char const* argv[])
 
   printf("Listening for connections on port: %d\n", PORT);
 
-  int client;
 
-  //accept connection
-  if ((client = accept(server_fd, (struct sockaddr*)&address, &addrlen)) < 0) {
-    perror("accept");
-    exit(EXIT_FAILURE);
+  while (1) {
+    int *client = malloc(sizeof(int));
+
+    if ((*client = accept(server_fd, (struct sockaddr*)&address, &addrlen)) < 0) {
+      perror("accept");
+      exit(EXIT_FAILURE);
+    }
+
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, handle_client, client) != 0) {
+      perror("Failed to create thread");
+      return 1;
+    }
+
+    pthread_detach(thread);
   }
 
-  valread = read(client, buffer, 1024 - 1);
-  printf("%s", buffer);
-
-  char * data = 
-    "GET / HTTP/1.1\r\n"
-    "HOST: example.com:8000\r\n"
-    "Upgrade: websocket\r\n"
-    "Connection: Upgrade\r\n"
-    "Sec-Websocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
-    "\r\n";
-
-  send(client, data, strlen(data), 0);
-
-  // closing the connected socket
-  close(client);
-  // closing the listening socket
   close(server_fd);
 
   return 0;
