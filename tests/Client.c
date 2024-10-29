@@ -34,6 +34,8 @@ int main(int argc, char const* argv[])
     return -1;
   }
 
+  printf("Connected to server\n");
+
   char * data = 
     "GET / HTTP/1.1\r\n"
     "HOST: example.com:8000\r\n"
@@ -43,6 +45,7 @@ int main(int argc, char const* argv[])
     "Sec-WebSocket-Version: 13\r\n"
     "\r\n";
 
+  printf("Sending data\n");
   send(client_fd, data, strlen(data), 0);
 
   // closing the connected socket

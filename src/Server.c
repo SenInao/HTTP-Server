@@ -1,24 +1,12 @@
-#include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <pthread.h>
-
-#define PORT 8888
+#include "../include/Server.h"
+#include "../include/parser.h"
 
 void handle_request(char* request) {
-  int i;
-  char line[50];
-  for (i = 0; i < strlen(request); i++) {
-    if (request[i] == '\n') {
-      printf("line:%d - %s", i, line);
-      memset(line, 0, sizeof(line));
-      continue;
-    }
-    line[i] = request[i];
-  }
+  printf("Handling request:\n%s\n", request);
+
+  HTTP_REQUEST http_req = parse_request(request);
+  parse_headers(&http_req);
+  printf("Parsed request:\nMethod: %s\nPath: %s\nVersion: %s\n", http_req.method, http_req.path, http_req.version);
 }
 
 void* handle_client(void*arg) {
