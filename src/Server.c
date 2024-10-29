@@ -5,8 +5,12 @@ void handle_request(char* request) {
   printf("Handling request:\n%s\n", request);
 
   HTTP_REQUEST http_req = parse_request(request);
-  parse_headers(&http_req);
   printf("Parsed request:\nMethod: %s\nPath: %s\nVersion: %s\n", http_req.method, http_req.path, http_req.version);
+
+  parse_headers(&http_req);
+  for (int i = 0; i < http_req.headers_len; i++) {
+    printf("%s: %s\n", http_req.headers[i]->name, http_req.headers[i]->value);
+  }
 }
 
 void* handle_client(void*arg) {
