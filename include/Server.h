@@ -17,14 +17,16 @@ typedef struct HTTP_HEADER {
   int value_len;
 } HTTP_HEADER;
 
-typedef struct HTTP_REQUEST {
+typedef struct Request{
   char* method;
   char* path;
   char* version;
   HTTP_HEADER **headers;
   int headers_len;
+
+  char* body;
   // Other headers as needed
   char *request; // Pointer to the raw request string
-} HTTP_REQUEST;
+} Request;
 
 #endif

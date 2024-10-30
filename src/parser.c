@@ -1,8 +1,8 @@
 #include <string.h>
 #include "../include/Server.h"
 
-HTTP_REQUEST parse_request(char* request) {
-  HTTP_REQUEST http_req;
+Request parse_request(char* request) {
+  Request http_req;
   http_req.request = strdup(request);
 
   const char s[2] = " ";
@@ -19,7 +19,7 @@ HTTP_REQUEST parse_request(char* request) {
   return http_req;
 }
 
-void parse_headers(HTTP_REQUEST* http_req) {
+void parse_headers(Request* http_req) {
   const char *headers = strstr(http_req->request, "\r\n") + 2;
 
   http_req->headers_len = 0;

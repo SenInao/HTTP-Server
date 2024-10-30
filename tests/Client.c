@@ -8,9 +8,8 @@
 
 int main(int argc, char const* argv[])
 {
-  int status, valread, client_fd;
+  int status, client_fd;
   struct sockaddr_in serv_addr;
-  char buffer[1024] = { 0 };
 
   if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     printf("\n Socket creation error \n");
@@ -47,6 +46,16 @@ int main(int argc, char const* argv[])
 
   printf("Sending data\n");
   send(client_fd, data, strlen(data), 0);
+
+  ssize_t valread;
+  char buffer[1024] = { 0 };
+
+  valread = read(client_fd, buffer, 1024 - 1);
+  if (valread > 0) {
+    buffer[valread] = '\0';
+  }
+
+  printf("%s\n", buffer);
 
   // closing the connected socket
   close(client_fd);

@@ -1,17 +1,6 @@
 #include "../include/Server.h"
 #include "../include/parser.h"
-
-void handle_request(char* request) {
-  printf("Handling request:\n%s\n", request);
-
-  HTTP_REQUEST http_req = parse_request(request);
-  printf("Parsed request:\nMethod: %s\nPath: %s\nVersion: %s\n", http_req.method, http_req.path, http_req.version);
-
-  parse_headers(&http_req);
-  for (int i = 0; i < http_req.headers_len; i++) {
-    printf("%s: %s\n", http_req.headers[i]->name, http_req.headers[i]->value);
-  }
-}
+#include "../include/request_handler.h"
 
 void* handle_client(void*arg) {
   int client = *(int *)arg;
@@ -24,7 +13,10 @@ void* handle_client(void*arg) {
     buffer[valread] = '\0';
   }
 
-  handle_request(buffer);
+  Response res = handle_request(buffer);
+  printf("response: %s\n", res.stringified);
+
+  send(client, res.stringified, res.responseSize, 0);
 
   close(client);
   return NULL;
