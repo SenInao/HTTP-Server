@@ -14,7 +14,7 @@ void* handle_client(void*arg) {
   }
 
   Response res = handle_request(buffer);
-  printf("response: %s\n", res.stringified);
+  printf("%s\n", res.stringified);
 
   send(client, res.stringified, res.responseSize, 0);
 

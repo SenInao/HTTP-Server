@@ -12,9 +12,9 @@
 
 typedef struct HTTP_HEADER {
   char* name;
-  int name_len;
+  size_t name_len;
   char* value;
-  int value_len;
+  size_t value_len;
 } HTTP_HEADER;
 
 typedef struct Request{
