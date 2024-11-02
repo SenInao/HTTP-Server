@@ -1,6 +1,7 @@
 #include "../include/Server.h"
 #include "../include/parser.h"
 #include "../include/request_handler.h"
+#include "../include/get_content.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -72,7 +73,19 @@ Response handle_get(Request request) {
   HTTP_HEADER** headers = malloc(sizeof(HTTP_HEADER*));
   int header_count = 0;
 
-  char* body = "<html><body><h1>hello world!</h1></body></html>";
+  char* body = get_content(request.path);
+
+  char* status;
+  char* message;
+
+  if (body == NULL) {
+    status = strdup("404");
+    message = strdup("Not Found");
+    body = strdup("");
+  } else {
+    status = strdup("200");
+    message = strdup("OK");
+  }
 
   // Add standard headers
   char date_buf[32];
@@ -85,6 +98,6 @@ Response handle_get(Request request) {
   snprintf(content_length, sizeof(content_length), "%zu", strlen(body));
   add_header(&headers, &header_count, "Content-Length", content_length);
 
-  Response response = build_res(request.version, "200", "OK", headers, &header_count, body);
+  Response response = build_res(request.version, status, message, headers, &header_count, body);
   return response;
 }
