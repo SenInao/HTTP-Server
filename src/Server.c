@@ -1,6 +1,7 @@
 #include "../include/Server.h"
 #include "../include/parser.h"
 #include "../include/request_handler.h"
+#include "../include/server_err.h"
 
 void* handle_client(void*arg) {
   int client = *(int *)arg;

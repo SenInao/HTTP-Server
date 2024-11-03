@@ -2,6 +2,7 @@
 #include "../include/parser.h"
 #include "../include/request_handler.h"
 #include "../include/get_content.h"
+#include "../include/server_err.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -26,11 +27,8 @@ char* stringify_res(Response* response) {
     res_len += response->headers[i]->name_len+2;
     res_len += response->headers[i]->value_len+2;
   }
-
   res_len += 2;
-
   res_len += strlen(response->body) + 2;
-
 
   char *string = malloc(res_len);
 
@@ -79,9 +77,7 @@ Response handle_get(Request request) {
   char* message;
 
   if (body == NULL) {
-    status = strdup("404");
-    message = strdup("Not Found");
-    body = strdup("");
+    return not_found();
   } else {
     status = strdup("200");
     message = strdup("OK");
