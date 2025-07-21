@@ -27,9 +27,9 @@ char* stringify_res(Response* response) {
     res_len += response->headers[i]->name_len+2;
     res_len += response->headers[i]->value_len+2;
   }
+
   res_len += 2;
   res_len += strlen(response->body) + 2;
-
   char *string = malloc(res_len);
 
   snprintf(string, res_len, "%s %s %s\r\n", response->version, response->status, response->message);
